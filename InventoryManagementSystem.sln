@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inventory Management System", "Inventory Management System\Inventory Management System.csproj", "{F22D01D8-FD7D-46D3-B42E-C5DFAE48503F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryManagementSystem", "Inventory Management System\InventoryManagementSystem.csproj", "{F22D01D8-FD7D-46D3-B42E-C5DFAE48503F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryMS.Tests", "InventoryMS.Tests\InventoryMS.Tests.csproj", "{7411902C-773F-488A-9E01-9E1C10552DEA}"
 EndProject
