@@ -48,7 +48,7 @@ namespace Inventory_Management_System.Controllers
 
         // PUT: api/Product/{id}
         [HttpPut("{id}")]
-        public IActionResult PutProduct(string id, Product product)
+        public IActionResult updateProduct(string id, Product product)
         {
             if (id != product.ProductID)
             {
