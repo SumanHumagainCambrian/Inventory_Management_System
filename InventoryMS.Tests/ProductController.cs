@@ -1,91 +1,59 @@
-﻿//using Inventory_Management_System.Controllers;
-//using Inventory_Management_System.Models;
-//using Microsoft.EntityFrameworkCore;
-//using Moq;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-
-//namespace InventoryMS.Tests
-//{
-//    [TestFixture]
-//    public class ProductControllerTests
-//    {
-//        private UserController _controller;
-//        private Mock<InventoryMSDbContext> _mockContext;
-//        private Mock<DbSet<Product>> _mockSet;
-//        [SetUp]
-//        public void Setup()
-//        {
-//            var options = new DbContextOptionsBuilder<InventoryMSDbContext>()
-//                .UseInMemoryDatabase(databaseName: "TestDatabase")
-//                .Options;
-
-//            _mockContext = new Mock<InventoryMSDbContext>(options);
-//            _controller = new UserController(_mockContext.Object);
-//        }
-
-
-//    }
-//}
-
-using Moq;
-using NUnit.Framework;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using System.Linq;
-using Inventory_Management_System.Controllers;
+using System.ComponentModel.DataAnnotations;
 using Inventory_Management_System.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Inventory_Management_System.Tests
 {
-    [TestFixture]
-    public class ProductControllerTests
+    [TestClass]
+    public class ProductModelTests
     {
-        private Mock<InventoryMSDbContext> _mockContext;
-        private ProductController _controller;
-        private Mock<DbSet<Product>> _mockProductSet;
-
-        [SetUp]
-        public void Setup()
+        [TestMethod]
+        public void Product_WithValidProperties_IsValid()
         {
-            var options = new DbContextOptionsBuilder<InventoryMSDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
-                .Options;
+            // Arrange
+            var product = new Product
+            {
+                ProductID = "Product1",
+                Name = "Test Product",
+                Description = "This is a product 1.",
+                Price = 99.99f,
+                Quantity = 10
+            };
 
-            _mockContext = new Mock<InventoryMSDbContext>(options);
-            _controller = new ProductController(_mockContext.Object);
-        }
-
-        [Test]
-        public void GetProducts_ReturnsAllProducts()
-        {
             // Act
-            var result = _controller.GetProducts().Result as OkObjectResult;
-
-            //// Assert
-            //Assert. IsNotNull(result);
-            var products = result.Value as List<Product>;
-            //Assert.IsNotNull(products);
-            Assert.Equals(2, products.Count);
-        }
-
-        [Test]
-        public void GetProduct_ReturnsProductById()
-        {
-            // Act
-            var result = _controller.GetProduct("P001").Result as OkObjectResult;
+            var validationResults = ValidateModel(product);
 
             // Assert
-            var product = result.Value as Product;
-            Assert.Equals("P001", product.ProductID);
+            Assert.IsFalse(validationResults.Any(), "Product should be valid but failed validation.");
         }
 
+        [TestMethod]
+        public void Product_WithoutName_FailsValidation()
+        {
+            // Arrange
+            var product = new Product
+            {
+                ProductID = "Product1",
+                Description = "This is a product 1.",
+                Price = 99.99f,
+                Quantity = 10
+            };
 
+            // Act
+            var validationResults = ValidateModel(product);
+
+            // Assert
+            Assert.IsTrue(validationResults.Any(vr => vr.MemberNames.Contains("Name")), "Product should fail due to missing Name.");
+        }
+
+        private IEnumerable<ValidationResult> ValidateModel(Product product)
+        {
+            var context = new ValidationContext(product, serviceProvider: null, items: null);
+            var validationResults = new List<ValidationResult>();
+
+            Validator.TryValidateObject(product, context, validationResults, validateAllProperties: true);
+            return validationResults;
+        }
     }
 }
-
-

@@ -1,60 +1,76 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Inventory_Management_System.Controllers;
 using Inventory_Management_System.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Moq;
-using NUnit.Framework;
-using NUnit.Framework;
-using System.Collections.Generic; // For List and IEnumerable
-using System.Linq; // For LINQ operations
-using Microsoft.AspNetCore.Mvc; // For ActionResult
 
-namespace InventoryMS.Tests
+namespace Inventory_Management_System.Tests
 {
-    [TestFixture]
-    public class UserControllerTests
+    [TestClass]
+    public class UserModelTests
     {
-        private UserController _controller;
-        private Mock<InventoryMSDbContext> _mockContext;
-        private Mock<DbSet<User>> _mockSet;
-        [SetUp]
-        public void Setup()
-        {
-            var options = new DbContextOptionsBuilder<InventoryMSDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
-                .Options;
-
-            _mockContext = new Mock<InventoryMSDbContext>(options);
-            _controller = new UserController(_mockContext.Object);
-        }
-
-        [Test]
-        public async Task GetUsers_ReturnsAllUsers2()
+        [TestMethod]
+        public void User_WithValidProperties_IsValid()
         {
             // Arrange
-            var users = new List<User>
+            var user = new User
             {
-               new User { Id = 1, Username = "John", Password = "Aa12345", Role = "Admin" },
-            new User { Id = 2, Username = "Suman", Password = "Aa12345", Role = "Customer" },
+                Id = 1,
+                Username = "testuser",
+                Password = "password123",
+                Role = "Admin"
             };
 
-            // Set up the mock DbSet to return the list of users using Task.FromResult
-            _mockSet.Setup(m => m.ToListAsync(It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(users);
-
-            _mockContext.Setup(c => c.Users).Returns(_mockSet.Object);
-
             // Act
-            var result = await _controller.GetUsers();
+            var validationResults = ValidateModel(user);
 
             // Assert
-            Assert.Equals(2, result.Count); // Check if the count of users is correct
+            Assert.IsFalse(validationResults.Any(), "User should be valid but failed validation.");
         }
 
+        [TestMethod]
+        public void UserModel_MissingPassword_FailsValidation()
+        {
+            // Arrange
+            var user = new User
+            {
+                Id = 2,
+                Username = "testuser",
+                Role = "Admin"
+            };
+
+            // Act
+            var validationResults = ValidateModel(user);
+
+            // Assert
+            Assert.AreEqual(1, validationResults.Count);
+            Assert.AreEqual("The Password field is required.", validationResults[0].ErrorMessage);
+        }
+
+        [TestMethod]
+        public void UserModel_MissingRole_FailsValidation()
+        {
+            // Arrange
+            var user = new User
+            {
+                Id = 3,
+                Username = "testuser",
+                Password = "password123"
+            };
+
+            // Act
+            var validationResults = ValidateModel(user);
+
+            // Assert
+            Assert.AreEqual(1, validationResults.Count);
+            Assert.AreEqual("The Role field is required.", validationResults[0].ErrorMessage);
+        }
+
+        private IList<ValidationResult> ValidateModel(object model)
+        {
+            var validationResults = new List<ValidationResult>();
+            var validationContext = new ValidationContext(model, null, null);
+            Validator.TryValidateObject(model, validationContext, validationResults, true);
+            return validationResults;
+        }
     }
 }
