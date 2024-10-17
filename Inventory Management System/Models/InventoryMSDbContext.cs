@@ -14,5 +14,6 @@ namespace Inventory_Management_System.Models
 
         // Add the DbSet for Orders
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Warehouse> Warehouses { get; set; } //for Wareshouse
     }
 }

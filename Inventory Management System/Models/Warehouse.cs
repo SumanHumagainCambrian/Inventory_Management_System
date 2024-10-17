@@ -2,18 +2,14 @@
 
 namespace Inventory_Management_System.Models
 {
-    public class User
+    public class Warehouse
     {
         [Key]
         public int Id { get; set; }
-
-        public string Username { get; set; }
+        [Required]
+        public string Location { get; set; }
 
         [Required]
-        public string Password { get; set; }
-
-        [Required]
-        public string Role { get; set; }
-
+        public List<Product> Products { get; set; }
     }
 }
