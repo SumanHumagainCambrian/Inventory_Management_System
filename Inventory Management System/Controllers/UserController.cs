@@ -18,7 +18,7 @@ namespace Inventory_Management_System.Controllers
 
         // GET: api/GetUsers
         [HttpGet("GetUsers")]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<List<User>> GetUsers()
         {
             return await _context.Users.ToListAsync();
         }
@@ -29,7 +29,7 @@ namespace Inventory_Management_System.Controllers
         {
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return Ok();
         }
 
     }
