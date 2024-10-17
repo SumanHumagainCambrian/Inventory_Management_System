@@ -1,7 +1,9 @@
 ﻿using Inventory_Management_System.Models;
+using Inventory_Management_System.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Inventory_Management_System.Controllers
 {
@@ -9,28 +11,26 @@ namespace Inventory_Management_System.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly InventoryMSDbContext _context;
+        private readonly IUserInterface _userService;
 
-        public UserController(InventoryMSDbContext context)
+        public UserController(IUserInterface userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
-        // GET: api/GetUsers
+        // GET: api/User/GetUsers
         [HttpGet("GetUsers")]
         public async Task<List<User>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return await _userService.GetUsersAsync();
         }
 
-        // POST: api/CreateUser
+        // POST: api/User/CreateUser
         [HttpPost("CreateUser")]
         public async Task<ActionResult<User>> CreateUser(User user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return Ok();
+            var createdUser = await _userService.CreateUserAsync(user);
+            return CreatedAtAction(nameof(GetUsers), new { id = createdUser.Value.Id }, createdUser.Value);
         }
-
     }
 }
