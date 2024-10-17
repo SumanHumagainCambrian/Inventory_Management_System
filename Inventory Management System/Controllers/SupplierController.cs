@@ -7,21 +7,23 @@ namespace Inventory_Management_System.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class SupplierController : Controller
+    public class SupplierController : ControllerBase
     {
-        private readonly InventoryMSDbContext _context;
+        private readonly InventoryMSDbContext _context; // Database Context
 
         public SupplierController(InventoryMSDbContext context)
         {
             _context = context;
         }
 
+        // Reterives all the Supplier
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Supplier>>> GetSuppliers()
         {
             return await _context.Suppliers.ToListAsync();
         }
 
+        // Reterives a specifies Supplier as per the ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Supplier>> GetSupplier(int id)
         {
@@ -29,12 +31,13 @@ namespace Inventory_Management_System.Controllers
 
             if (supplier == null)
             {
-                return NotFound();
+                return NotFound(); // The Output if requested ID dosen't exist
             }
 
-            return supplier;
+            return supplier; // User will get desired output IF entered ID exists
         }
 
+        // This will add a new supplier to the database
         [HttpPost]
         public async Task<ActionResult<Supplier>> PostSupplier(Supplier supplier)
         {
@@ -44,14 +47,10 @@ namespace Inventory_Management_System.Controllers
             return CreatedAtAction(nameof(GetSupplier), new { id = supplier.SupplierId }, supplier);
         }
 
+        // It will update the existing suppliers data
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSupplier(int id, Supplier supplier)
         {
-            if (supplier == null)
-            {
-                return BadRequest();
-            }
-
             if (id != supplier.SupplierId)
             {
                 return BadRequest();
@@ -63,6 +62,7 @@ namespace Inventory_Management_System.Controllers
             return NoContent();
         }
 
+        // It will delete the supplier from the database
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSupplier(int id)
         {
